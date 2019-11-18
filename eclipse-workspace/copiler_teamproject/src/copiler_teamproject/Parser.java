@@ -538,7 +538,8 @@ public class Parser {
     }
     
     public static void main(String args[]) {
-        Parser parser  = new Parser(new Lexer("/Users/choejaeyun/Downloads/Compiler/test.txt"));
+    	//Parser parser  = new Parser(new Lexer("C:\\Users\\HYEJI\\Desktop\\컴파일러\\11주\\팀프로젝트_샘플코드_Lexer.txt"));
+        Parser parser  = new Parser(new Lexer("C:\\Users\\HYEJI\\Documents\\카카오톡 받은 파일\\test.txt"));
         Program prog = parser.program();
         prog.display();           // display abstract syntax tree
     } //main
