@@ -163,193 +163,164 @@ public class Parser {
         // Block --> '{' Statements '}'
         Block b = new Block();
         
-        //match(TokenType.LeftBrace);
-        //Statement s = statement();
-        //match(TokenType.RightBrace);
         while( token.type().equals(TokenType.While) ||
         		token.type().equals(TokenType.If) ||
         		token.type().equals(TokenType.Identifier)){
         	b.sts.add(statement());
-        	
-        	
         }
-        		
-    //    b.sts.add(e);
-    //    return new ArrayList<Statement>();
-
-
-        // student exercise
+        
         return b;
     }
   
+    
     private Assignment assignment () {
+    	//Assignment --> identifier (은 | 는) expression [이]다
+    	
     	assignFlag = 1;
     	Variable t = new Variable(match(TokenType.Identifier));
+    	match(TokenType.MeaningLess); // (은|는)
+    	
+    	//*****배열확인*******
+    	Variable arrA = null, arrB = null;
+    	
+    	if(token.type().equals(TokenType.LeftBracket)){ // [ 을 만났을 때 == 배열인 경우 
+        	match(TokenType.LeftBracket);
+        	arrA = new Variable(match(TokenType.IntLiteral));
+        	match(TokenType.RightBracket);
+        	if(token.type().equals(TokenType.LeftBracket)){ // [ 을 또 만났을 때 == 이차원 배열인 경우
+        		match(TokenType.LeftBracket);
+        		arrB = new Variable(match(TokenType.IntLiteral));
+            	match(TokenType.RightBracket);
+        	}
+    	}
+    	//*****배열확인 끝*****
 
-    	match(TokenType.MeaningLess);
     	Expression e = expression();
-    	match(TokenType.MeaningLess);
+    	match(TokenType.MeaningLess); // (다|이다)
     	assignFlag = 0;
     	return new Assignment(t,e);
-    	
-   
-       // return null;  // student exercise
     }
   
     private Conditional ifStatement () {
-        // IfStatement --> if ( Expression ) Statement [ else Statement ]
-    	// if statement --> 만약 'expression' (이라면 | 라면) statements 끝 
-    	//                    [ 그렇지 않으면 statements 끝 ]
+        // IfStatement --> 만약 'expression' (이라면 | 라면) statements 끝 [ 그렇지 않으면  statements 끝] 
     	Statement s = new Skip();
 
-    	match(TokenType.If);
+    	match(TokenType.If); // 만약
     	Expression e = expression();
 
-    	match(TokenType.MeaningLessIf);
-
+    	match(TokenType.MeaningLessIf); // (이라면 |라면) 
     	s = statements();
-    	if(token.type().equals(TokenType.Else)){
-    		match(TokenType.Else);
-    		Statement elseS = statement();
-        	match(TokenType.ControlEnd);
-
-    		return new Conditional(e,s,elseS);
-    		
-    	}
-    	else
-        	match(TokenType.ControlEnd);
-
-    		return new Conditional(e,s);
     	
-      //  return null;  // student exercise
+    	if(token.type().equals(TokenType.Else)){ // 그렇지않으면일 경우
+    		match(TokenType.Else); // (그렇지않으면)
+    		Statement elseS = statement();
+        	match(TokenType.ControlEnd); // (끝)
+
+    		return new Conditional(e,s,elseS); // 만약 'expression' (이라면 | 라면) statements 끝  그렇지 않으면  statements 끝
+    	}
+    	else {
+        	match(TokenType.ControlEnd); // (끝)
+        	return new Conditional(e,s); // 만약 'expression' (이라면 | 라면) statements 끝 
+    	}
     }
   
     private Loop whileStatement () {
-        // WhileStatement --> while ( Expression ) Statement
-    	// while statement --> 반복 'expression' (이라면 | 라면) statements 끝
+        // WhileStatement --> 반복 'expression' (이라면 | 라면) statements (끝)
     	Statement s = new Skip();
-    	match(TokenType.While);
-    	//match(TokenType.LeftParen);
-    	System.out.println("lll1");
-
-    	Expression e = expression();
-    	System.out.println("lll");
-    	match(TokenType.MeaningLessIf);
-
-    //	match(TokenType.RightParen);
-    	s = statements();
-    	match(TokenType.ControlEnd);
-
-    	return new Loop(e,s);
     	
+    	match(TokenType.While); // (반복)
+    	Expression e = expression(); 
+    	match(TokenType.MeaningLessIf); // (이라면 | 라면)
     	
-     //   return null;  // student exercise
+    	s = statements(); 
+    	match(TokenType.ControlEnd); // (끝)
+
+    	return new Loop(e,s); 
     }
 
     private Expression expression () {
-        // Expression --> Conjunction { || Conjunction }
-    	//Expression -> Conjunction { 또는 Conjunction }
-    	System.out.println("startttl");
+        //Expression --> Conjunction { 또는 Conjunction }
 
     	Expression e = conjunction();
-    	while(token.type().equals(TokenType.Or)){
+    	while(token.type().equals(TokenType.Or)){ // (또는)일 경우
             Operator op = new Operator(match(token.type()));
             Expression c2 = conjunction();
             e = new Binary(op, e, c2);
         }
         return e;
-      
-	
-       // return null;  // student exercise
     }
   
     private Expression conjunction () {
-        // Conjunction --> Equality { && Equality }
-    	// Conjunction -> Equality { 그리고 Equality }
+    	// Conjunction --> Equality { 그리고 Equality }
+    	
     	Expression e = equality();
-	      while(token.type().equals(TokenType.And)){
-	          Operator op = new Operator(match(token.type()));
-	          Expression e2 = equality();
-	          e = new Binary(op, e, e2);
-	      }
-	      return e;
-	
-       // return null;  // student exercise
+	    while(token.type().equals(TokenType.And)){ // (그리고)일 경우 
+	        Operator op = new Operator(match(token.type()));
+	        Expression e2 = equality();
+	        e = new Binary(op, e, e2);
+	    }
+	    return e;
     }
   
     private Expression equality () {
-        // Equality --> Relation [ EquOp Relation ]
-    	// Equality -> Relation [ (은 | 는) Relation (와 | 과) EquOp ]
+        // Equality -> Relation [ (은 | 는) Relation (와 | 과) EquOp ]
+    	// 두 식이 (같은지|다른지) 확인
     	
     	Expression e = relation();
     	if(token.type().equals(TokenType.MeaningLess) && assignFlag == 0
-    			&& !token.type().equals(TokenType.MeaningLessIf)
-    					&& pass == 0){
-        	match(TokenType.MeaningLess);
+    			&& !token.type().equals(TokenType.MeaningLessIf) && pass == 0){
+        	match(TokenType.MeaningLess); // (은|는)
         	Expression r2 = relation();
-        	match(TokenType.MeaningLess);
+        	match(TokenType.MeaningLess); // (와|과)
         	if(isEqualityOp()){
         		Operator op = new Operator(match(token.type()));
-                // Expression r2 = relation();
-                 e = new Binary(op, e, r2);
-                 return e;
-        	
+                e = new Binary(op, e, r2);
+                return e;
         	}
         }
-        System.out.println("passssss");
         pass = 0 ;
-
+        
     	return e;
-      //  return null;  // student exercise
     }
     
     
     private Expression relation (){
-        // Relation --> Addition [RelOp Addition]
-    	// Relation -> Addition [ (은 | 는) Addition 보다 RelOp ]
-
+        // Relation --> Addition [ (은 | 는) Addition 보다 RelOp ]
+    	// 두 식의 대소 관계를 확인
+    	
     	Expression e = addition();
     	if(token.type().equals(TokenType.MeaningLess) && assignFlag == 0
     			&& !token.type().equals(TokenType.MeaningLessIf)
     			&& !token.type().equals(TokenType.MeaningLessThan)
     			&& !token.type().equals(TokenType.MeaningLessWith)){
     		
-        	match(TokenType.MeaningLess);
+        	match(TokenType.MeaningLess); //(은|는)
             Expression r  = relation();
-        	//System.out.println("MMMM2222M");
-        	if(token.type().equals(TokenType.MeaningLessWith) 
-        			|| token.type().equals(TokenType.MeaningLessThan) ){
+        	
+            if(token.type().equals(TokenType.MeaningLessWith) || token.type().equals(TokenType.MeaningLessThan) ){
         		if(token.type().equals(TokenType.MeaningLessThan)){
         			match(TokenType.MeaningLessThan);
-                	System.out.println("ttthannn");
                 	if (isRelationalOp()) {
                         Operator op = new Operator(match(token.type()));
-                        System.out.println("op1 = "+ op);
-                      //  Expression a2 = addition();
                         e = new Binary(op, e, r);
                     }
         		}
         		else{
         			match(TokenType.MeaningLessWith);
         			if(isEqualityOp()){
-            		Operator op = new Operator(match(token.type()));
-                    // Expression r2 = relation();
-                     e = new Binary(op, e, r);
-                     pass = 1;
-                   //  return e;
-            	
-            	}
-        			
+	            		Operator op = new Operator(match(token.type()));
+	                    e = new Binary(op, e, r);
+	                    pass = 1;           	
+	            	}
         		}
         	}
-        	
         }
-    	
     	return e;
     }
   
     private Expression addition () {
         // Addition --> Term { AddOp Term }
+    	
         Expression e = term();
 
         while (isAddOp()) {
@@ -361,22 +332,17 @@ public class Parser {
     }
   
     private Expression term () {
-        // Term --> Factor { MultiplyOp Factor }
-    	// Term -> Factor { ( { MulOp Factor } | { (을 | 를) Factor 로 나눈 나머지 } ) }
+    	// Term --> Factor { ( { MulOp Factor } | { (을 | 를) Factor 로 나눈 나머지 } ) }
         Expression e = factor();
-        while ((isMultiplyOp() ||token.type().equals(TokenType.MeaningLessRemain))
-        		 ) {
+        while ((isMultiplyOp() ||token.type().equals(TokenType.MeaningLessRemain))) {
         	if(token.type().equals(TokenType.MeaningLessRemain)){
-            	match(TokenType.MeaningLessRemain);
+            	match(TokenType.MeaningLessRemain); //(을|를)
                 Expression term2 = factor();
-            	match(TokenType.MeaningLess);
+            	match(TokenType.MeaningLess); // (로 나눈 나머지)
 	            Operator op = new Operator(match(token.type()));
 	            e = new Binary(op, e, term2);
-
         	}
         	else{
-        		System.out.println("cattt222t");
-
 	            Operator op = new Operator(match(token.type()));
 	            Expression term2 = factor();
 	            e = new Binary(op, e, term2);
@@ -387,7 +353,8 @@ public class Parser {
   
     private Expression factor() {
         // Factor --> [ UnaryOp ] Primary 
-        if (isUnaryOp()) {
+        
+    	if (isUnaryOp()) {
             Operator op = new Operator(match(token.type()));
             Expression term = primary();
             return new Unary(op, term);
@@ -397,10 +364,11 @@ public class Parser {
   
     private Expression primary () {
         // Primary --> Identifier | Literal | ( Expression )| Type ( Expression )
-    	// Primary -> Identifier [ [Expression] ] | Literal | ( Expression ) | 
+    	// Primary --> Identifier [ [Expression] ] | Literal | ( Expression ) | 
         Expression e = null;
         if (token.type().equals(TokenType.Identifier)) {
             e = new Variable(match(TokenType.Identifier));
+            
         } 
         else if (isLiteral()) {
         	
@@ -440,14 +408,12 @@ public class Parser {
     	else if (isBooleanLiteral()) {
     		if (token.type().equals(TokenType.True)) {
     		    match(TokenType.True); 
-    		    } 
+    		} 
     		else if (token.type().equals(TokenType.False)) {
     		    match(TokenType.False);
-    		    }
-    		
-    		
-    		    value = new BoolValue(Boolean.valueOf(token.value()));
-    		    } 
+    		}	
+    		value = new BoolValue(Boolean.valueOf(token.value()));
+    	} 
     	
         return value;  // student exercise
     }
@@ -474,10 +440,10 @@ public class Parser {
     }
     
     private boolean isRelationalOp( ) {
-        return token.type().equals(TokenType.Less) ||
-               token.type().equals(TokenType.LessEqual) || 
-               token.type().equals(TokenType.Greater) ||
-               token.type().equals(TokenType.GreaterEqual);
+        return token.type().equals(TokenType.Less) 		
+        	|| token.type().equals(TokenType.LessEqual)
+        	|| token.type().equals(TokenType.Greater)
+        	|| token.type().equals(TokenType.GreaterEqual);
     }
     
     private boolean isType( ) {
@@ -488,19 +454,19 @@ public class Parser {
     }
     
     private boolean isLiteral( ) {
-        return token.type().equals(TokenType.IntLiteral) ||
-            isBooleanLiteral() ||
-            token.type().equals(TokenType.FloatLiteral) ||
-            token.type().equals(TokenType.CharLiteral);
+        return token.type().equals(TokenType.IntLiteral)
+        	|| token.type().equals(TokenType.FloatLiteral)
+        	|| token.type().equals(TokenType.CharLiteral)
+        	|| isBooleanLiteral();
     }
     
     private boolean isBooleanLiteral( ) {
-        return token.type().equals(TokenType.True) ||
-            token.type().equals(TokenType.False);
+        return token.type().equals(TokenType.True)
+        	|| token.type().equals(TokenType.False);
     }
     
     public static void main(String args[]) {
-        Parser parser  = new Parser(new Lexer("C:\\Users\\HYEJI\\eclipse-workspace\\compiler_teamproject\\src\\compiler_teamproject\\test2.txt"));
+        Parser parser  = new Parser(new Lexer("C:\\Users\\HYEJI\\eclipse-workspace\\compiler_teamproject\\src\\compiler_teamproject\\test3.txt"));
         Program prog = parser.program();
         prog.display();           // display abstract syntax tree
     } //main

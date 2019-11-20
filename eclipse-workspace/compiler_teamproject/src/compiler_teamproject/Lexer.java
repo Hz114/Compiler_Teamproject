@@ -24,10 +24,12 @@ public class Lexer {
     private Token postposition = null;
     
     public Lexer (String fileName) { // source filename
-       try {
-            input = new BufferedReader(
+    	input = null;
+                
+    	try {
+    	   	input = new BufferedReader(
                   new InputStreamReader(
-                        new FileInputStream(fileName),"utf-8"
+                        new FileInputStream(fileName),"UTF-8"
                         )
                   );
         }
@@ -183,10 +185,9 @@ public class Lexer {
     }
 
     static public void main ( String[] argv ) {
-        Lexer lexer = new Lexer("C:\\Users\\HYEJI\\Desktop\\컴파일러\\11주\\팀프로젝트_샘플코드_Lexer.txt");
+    	Lexer lexer = new Lexer("C:\\Users\\HYEJI\\eclipse-workspace\\compiler_teamproject\\src\\compiler_teamproject\\test3.txt");
         Token tok = lexer.next( );
         while (tok != Token.eofTok) {
-        	
             System.out.println(tok.toString());
             tok = lexer.next( );
         } 
