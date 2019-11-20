@@ -44,6 +44,8 @@ class Declarations extends ArrayList<Declaration> {
 class Declaration {
 	// 실행문을 출력한다 타입과 변수명을 출력한다.
 	// Declaration = Variable v; Type t
+	// 배열 형식 추가 Hz
+	
     Variable v;
     Type t;
     
@@ -71,7 +73,6 @@ class Declaration {
     		System.out.println("Type "+ t + "Variable " + v + "\tArrSize " + arrA);
     	}else if(arrA != null && arrB != null) { //2차원 배열
     		System.out.println("Type "+ t + "Variable " + v + "\tArrSize " + arrA + " x " + arrB);
-
     	}
     	
     }
@@ -101,36 +102,25 @@ abstract class Statement {
 }
 
 class Skip extends Statement {
-	public void display(int n){
-		for(int i = 0; i < n; i++) {
-		//	System.out.print("\t");
-			}
-						
-	}
-    
+	public void display(int n){}
 }
 
 
 class Block extends Statement {
-    // Block = Statement*
-    //         (a Vector of members)
+    // Block = Statement* (a Vector of members)
     public ArrayList<Statement> sts = new ArrayList<Statement>();
     public void display(int n){
     	for(int i=0; i<n; i++){
         	System.out.print("\t");
         }
-        System.out.println("Block-> ");
+        System.out.println("Block: ");
         ++n;
         for(Statement st : sts){
         	st.display(n);
         }
-      //  System.out.println(n+ "Block end ");
-
-    }
-    
-    
-
+    }    
 }
+
 class Assignment extends Statement {
     // Assignment = Variable target; Expression source
     Variable target;
@@ -144,14 +134,11 @@ class Assignment extends Statement {
     	for(int i=0; i<n; i++){
         	System.out.print("\t");
         }
-        System.out.println("Assignment-> ");
+        System.out.println("Assignment: ");
         ++n;
         target.display(n);
         source.display(n);
-        
     }
-    
-
 }
 
 class Conditional extends Statement {
@@ -171,12 +158,12 @@ class Conditional extends Statement {
     	for(int i=0; i<n; i++){
         	System.out.print("\t");
         }
-        System.out.println("IfStatement-> ");
+        System.out.println("IfStatement: ");
         ++n;
         test.display(n);
         thenbranch.display(n);
         if(elsebranch != null){
-        elsebranch.display(n);
+        	elsebranch.display(n);
         }
         
         
@@ -196,7 +183,7 @@ class Loop extends Statement {
     	for(int i=0; i<n; i++){
         	System.out.print("\t");
         }
-        System.out.println("Loop-> ");
+        System.out.println("Loop: ");
         ++n;
         test.display(n);
         body.display(n);
@@ -211,17 +198,26 @@ abstract class Expression {
 	    	for(int i=0; i<n; i++){
 	        	System.out.print("\t");
 	        }
-	        
 	    }
-
 }
 
 class Variable extends Expression {
     // Variable = String id
-    private String id;
+	// 배열 형식 추가 Hz
+    private String id, arrA = null, arrB = null;
 
     Variable (String s) { id = s; }
+    Variable (String s, String a) {
+    	id = s;
+    	arrA = a;
+    }
+    Variable (String s, String a, String b) {
+    	id = s;
+    	arrA = a;
+    	arrB = b;
+    }
 
+    
     public String toString( ) { return id; }
     
     public boolean equals (Object obj) {
@@ -235,16 +231,19 @@ class Variable extends Expression {
     	for(int i=0; i<n; i++){
         	System.out.print("\t");
         }
-        System.out.println("Variable-> " + id);
-        
-        
+    	if(arrA == null && arrB == null) { //배열이 아닌경우 
+    		System.out.println("Variable: " + id);
+    	}else if(arrA != null && arrB == null) { //1차원 배열
+    		System.out.println("Variable: " + id + "\tArrSize " + arrA);
+    	}else if(arrA != null && arrB != null) { //2차원 배열
+    		System.out.println("Variable: " + id + "\tArrSize " + arrA + " x " + arrB);
+    	}
     }
 
 }
 
 abstract class Value extends Expression {
-    // Value = IntValue | BoolValue |
-    //         CharValue | FloatValue
+    // Value = IntValue | BoolValue | CharValue | FloatValue
     protected Type type;
     protected boolean undef = true;
 
@@ -302,7 +301,7 @@ class IntValue extends Value {
     	for(int i=0; i<n; i++){
         	System.out.print("\t");
         }
-        System.out.println("int-> " + value);
+        System.out.println("int: " + value);
         
     }
 
@@ -333,7 +332,7 @@ class BoolValue extends Value {
     	for(int i=0; i<n; i++){
         	System.out.print("\t");
         }
-        System.out.println("Bool-> " + value);
+        System.out.println("Bool: " + value);
         
     }
 
@@ -359,7 +358,7 @@ class CharValue extends Value {
     	for(int i=0; i<n; i++){
         	System.out.print("\t");
         }
-        System.out.println("char-> " + value);
+        System.out.println("char: " + value);
         
     }
 
@@ -385,7 +384,7 @@ class FloatValue extends Value {
     	for(int i=0; i<n; i++){
         	System.out.print("\t");
         }
-        System.out.println("float-> " + value);
+        System.out.println("float: " + value);
         
     }
 
@@ -403,7 +402,7 @@ class Binary extends Expression {
     	for(int i=0; i<n; i++){
         	System.out.print("\t");
         }
-        System.out.println("Binary-> " + op);
+        System.out.println("Binary: " + op);
         ++n;
         term1.display(n);
         term2.display(n);
@@ -423,7 +422,7 @@ class Unary extends Expression {
     	for(int i=0; i<n; i++){
         	System.out.print("\t");
         }
-        System.out.println("Unary-> " + op);
+        System.out.println("Unary: " + op);
         ++n;
         term.display(n);
     }
