@@ -125,18 +125,46 @@ class Assignment extends Statement {
     // Assignment = Variable target; Expression source
     Variable target;
     Expression source;
+    
+    //배열 출력을 위한 변수 선언
+    Expression arrayA = null;
+    Expression arrayB = null;
 
     Assignment (Variable t, Expression e) {
         target = t;
         source = e;
     }
+    Assignment (Variable t, Expression e,Expression arrA) {
+        target = t;
+        source = e;
+        
+        arrayA = arrA;
+        
+    }
+    Assignment (Variable t, Expression e,Expression arrA, Expression arrB) {
+        target = t;
+        source = e;
+
+        arrayA = arrA;
+        arrayB = arrB;
+    }
+    
     public void display(int n){
     	for(int i=0; i<n; i++){
         	System.out.print("\t");
         }
         System.out.println("Assignment: ");
         ++n;
-        target.display(n);
+        //target.display(n);
+        
+        if(arrayA != null && arrayB != null) { //2차원 배열 
+        	target.display(n, arrayA, arrayB);
+    	}else if(arrayA != null && arrayB == null) { //1차원 배열
+    		target.display(n, arrayA);       
+    	}else {
+    		target.display(n);
+    	}
+        
         source.display(n);
     }
 }
@@ -193,7 +221,7 @@ class Loop extends Statement {
 }
 
 abstract class Expression {
-    // Expression = Variable | Value | Binary | Unary
+    // Expression =  | Value | Binary | Unary
 	 public void display(int n){
 	    	for(int i=0; i<n; i++){
 	        	System.out.print("\t");
@@ -203,20 +231,20 @@ abstract class Expression {
 
 class Variable extends Expression {
     // Variable = String id
-	// 배열 형식 추가 Hz
-    private String id, arrA = null, arrB = null;
+	// 배열 형식 추가 Hz---완성
+    private String id;
+    private Expression arrA = null, arrB = null;
 
     Variable (String s) { id = s; }
-    Variable (String s, String a) {
+    Variable (String s, Expression a) {
     	id = s;
     	arrA = a;
     }
-    Variable (String s, String a, String b) {
+    Variable (String s, Expression a, Expression b) {
     	id = s;
     	arrA = a;
     	arrB = b;
     }
-
     
     public String toString( ) { return id; }
     
@@ -231,14 +259,29 @@ class Variable extends Expression {
     	for(int i=0; i<n; i++){
         	System.out.print("\t");
         }
-    	if(arrA == null && arrB == null) { //배열이 아닌경우 
+    	if(arrA != null && arrB != null) {
+    		System.out.println("Variable: " + id+"\tArrSize: " + arrA + " x " + arrB);
+    	}else if(arrA != null && arrB == null) {
+    		System.out.println("Variable: " + id+"\tArrSize: " + arrA);
+    	}else {
     		System.out.println("Variable: " + id);
-    	}else if(arrA != null && arrB == null) { //1차원 배열
-    		System.out.println("Variable: " + id + "\tArrSize " + arrA);
-    	}else if(arrA != null && arrB != null) { //2차원 배열
-    		System.out.println("Variable: " + id + "\tArrSize " + arrA + " x " + arrB);
     	}
     }
+    public void display(int n, Expression a){
+    	for(int i=0; i<n; i++){
+	        System.out.print("\t");
+	    }
+    	arrA = a;
+	 	System.out.println("Variable: " + id +"\tArrSize: " + arrA);
+	}
+	public void display(int n, Expression a, Expression b){
+		for(int i=0; i<n; i++){
+	       System.out.print("\t");
+	    }
+		arrA = a;
+		arrB = b;
+		System.out.println("Variable: " + id+"\tArrSize: " + arrA + " x " + arrB);
+	}
 
 }
 

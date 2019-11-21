@@ -174,31 +174,43 @@ public class Parser {
   
     
     private Assignment assignment () {
-    	//Assignment --> identifier (은 | 는) expression [이]다
+    	// Assignment --> identifier (은 | 는) expression [이]다
+    	// 배열 ex) 숫자[0][1]은 (3 더하기 ㄹㄹ) 나누기 수cc01이다
     	
     	assignFlag = 1;
     	Variable t = new Variable(match(TokenType.Identifier));
-    	match(TokenType.MeaningLess); // (은|는)
-    	
-    	//*****배열확인*******
-    	Variable arrA = null, arrB = null;
+    	//e = new Variable(match(TokenType.Identifier));
+        
+        //*****배열확인*******
+    	Expression arrA = null, arrB = null;
     	
     	if(token.type().equals(TokenType.LeftBracket)){ // [ 을 만났을 때 == 배열인 경우 
         	match(TokenType.LeftBracket);
-        	arrA = new Variable(match(TokenType.IntLiteral));
+        	arrA = expression();
+
         	match(TokenType.RightBracket);
         	if(token.type().equals(TokenType.LeftBracket)){ // [ 을 또 만났을 때 == 이차원 배열인 경우
         		match(TokenType.LeftBracket);
-        		arrB = new Variable(match(TokenType.IntLiteral));
+        		arrB = expression();
             	match(TokenType.RightBracket);
         	}
     	}
     	//*****배열확인 끝*****
+    	
+    	match(TokenType.MeaningLess); // (은|는)
 
     	Expression e = expression();
     	match(TokenType.MeaningLess); // (다|이다)
     	assignFlag = 0;
-    	return new Assignment(t,e);
+    	
+
+    	if(arrA != null && arrB != null) { //2차원 배열
+        	return new Assignment(t,e, arrA, arrB);
+    	}else if(arrA != null && arrB == null) { //1차원 배열
+        	return new Assignment(t,e, arrA);
+    	}else{ //기본 (배열이 아닌경우)
+        	return new Assignment(t,e);
+    	}
     }
   
     private Conditional ifStatement () {
@@ -363,15 +375,40 @@ public class Parser {
     }
   
     private Expression primary () {
-        // Primary --> Identifier | Literal | ( Expression )| Type ( Expression )
     	// Primary --> Identifier [ [Expression] ] | Literal | ( Expression ) | 
-        Expression e = null;
+        // 배열ex) ㄹㄹ은 floatv[0] 더하기 23이다
+    	Expression e = null;
+        
         if (token.type().equals(TokenType.Identifier)) {
-            e = new Variable(match(TokenType.Identifier));
             
-        } 
-        else if (isLiteral()) {
+        	String temp = match(TokenType.Identifier);
+        	//e = new Variable(match(TokenType.Identifier));
+          
+            //*****배열확인*******
         	
+        	Expression arrA = null, arrB = null;
+        	
+        	if(token.type().equals(TokenType.LeftBracket)){ // [ 을 만났을 때 == 배열인 경우 
+            	match(TokenType.LeftBracket);
+            	arrA = expression();
+            	match(TokenType.RightBracket);
+            	if(token.type().equals(TokenType.LeftBracket)){ // [ 을 또 만났을 때 == 이차원 배열인 경우
+            		match(TokenType.LeftBracket);
+            		arrB = expression();
+                	match(TokenType.RightBracket);
+            	}
+        	}
+        	//*****배열확인 끝*****
+        	
+        	if(arrA != null  && arrB != null) {
+        		e = new Variable(temp, arrA);
+        	}else if(arrA != null  && arrB == null) {
+        		e = new Variable(temp, arrA, arrB);
+        	}else {
+        		e = new Variable(temp);
+        	}
+        } 
+        else if (isLiteral()) {	
             e = literal();
 
         } 
@@ -466,7 +503,7 @@ public class Parser {
     }
     
     public static void main(String args[]) {
-        Parser parser  = new Parser(new Lexer("C:\\Users\\HYEJI\\eclipse-workspace\\compiler_teamproject\\src\\compiler_teamproject\\test3.txt"));
+        Parser parser  = new Parser(new Lexer("C:\\Users\\HYEJI\\eclipse-workspace\\compiler_teamproject\\src\\compiler_teamproject\\test.txt"));
         Program prog = parser.program();
         prog.display();           // display abstract syntax tree
     } //main
