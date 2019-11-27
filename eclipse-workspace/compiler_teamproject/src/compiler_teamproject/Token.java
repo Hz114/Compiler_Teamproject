@@ -41,16 +41,19 @@ public class Token {
    public static final Token noMeanTokIf = new Token(TokenType.MeaningLessIf);
    public static final Token noMeanTokThan = new Token(TokenType.MeaningLessThan);
    public static final Token noMeanTokWith = new Token(TokenType.MeaningLessWith);
+   public static final Token inputTok = new Token(TokenType.Input);
+   public static final Token outputTok = new Token(TokenType.Output);
 
    private static final String[] reserved = {
-         "ì •ìˆ˜", "ì‹¤ìˆ˜", "ëª…ì œ", "ë¬¸ì", "ì°¸", "ê±°ì§“",
-         "ë§Œì•½", "ê·¸ë ‡ì§€ì•Šìœ¼ë©´", "ë°˜ë³µ", "ë",
-         "ê°™ë‹¤", "ë‹¤ë¥´ë‹¤", "ì‘ë‹¤", "ì‘ê±°ë‚˜ê°™ë‹¤", "í¬ë‹¤", "í¬ê±°ë‚˜ê°™ë‹¤",
-         "ê±°ì§“ë§ìŸì´", "ë§ˆì´ë„ˆìŠ¤", "ë¹¼ê¸°", "ë”í•˜ê¸°", 
-         "ê³±í•˜ê¸°", "ë‚˜ëˆ„ê¸°", "ë‚˜ëˆˆë‚˜ë¨¸ì§€", "ê·¸ë¦¬ê³ ", "ë˜ëŠ”",
-         "ì€", "ëŠ”", "ì„", "ë¥¼",
-         "ì´ë¼ë©´", "ë¼ë©´", "ì´ë‹¤", "ë‹¤",
-         "ì™€", "ê³¼", "ë¡œ", "ìœ¼ë¡œ","ë³´ë‹¤"
+         "Á¤¼ö", "½Ç¼ö", "¸íÁ¦", "¹®ÀÚ", "Âü", "°ÅÁş",
+         "¸¸¾à", "±×·¸Áö¾ÊÀ¸¸é", "¹İº¹", "³¡",
+         "°°´Ù", "´Ù¸£´Ù", "ÀÛ´Ù", "ÀÛ°Å³ª°°´Ù", "Å©´Ù", "Å©°Å³ª°°´Ù",
+         "°ÅÁş¸»ÀïÀÌ", "¸¶ÀÌ³Ê½º", "»©±â", "´õÇÏ±â", 
+         "°öÇÏ±â", "³ª´©±â", "³ª´«³ª¸ÓÁö", "±×¸®°í", "¶Ç´Â",
+         "Àº", "´Â", "À»", "¸¦",
+         "ÀÌ¶ó¸é", "¶ó¸é", "ÀÌ´Ù", "´Ù",
+         "¿Í", "°ú", "·Î", "À¸·Î","º¸´Ù",
+         "ÀÔ·Â", "Ãâ·Â"
    };
    
     private static final Token[] token = {
@@ -61,7 +64,8 @@ public class Token {
           multTok, divTok, remainTok, andTok, orTok,
           noMeanTok, noMeanTok, noMeanTokRemain, noMeanTokRemain, 
           noMeanTokIf, noMeanTokIf, noMeanTok, noMeanTok, 
-          noMeanTokWith, noMeanTokWith, noMeanTok, noMeanTok, noMeanTokThan, 
+          noMeanTokWith, noMeanTokWith, noMeanTok, noMeanTok, noMeanTokThan,
+          inputTok, outputTok
     };
    
    private Token (TokenType t, String v) {

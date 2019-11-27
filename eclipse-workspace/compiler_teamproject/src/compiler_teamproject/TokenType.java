@@ -9,6 +9,7 @@ public enum TokenType {
 	Identifier, IntLiteral, FloatLiteral, CharLiteral,
 	LeftParen, RightParen, LeftBracket, RightBracket,
 	Comma, ArrayExpr, MeaningLess, Eof, MeaningLessRemain, MeaningLessIf
-	,MeaningLessThan, MeaningLessWith
+	,MeaningLessThan, MeaningLessWith,
+	Input, Output
 	
 }

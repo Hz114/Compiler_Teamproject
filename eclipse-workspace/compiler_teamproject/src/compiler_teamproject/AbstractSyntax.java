@@ -192,11 +192,54 @@ class Conditional extends Statement {
         thenbranch.display(n);
         if(elsebranch != null){
         	elsebranch.display(n);
-        }
-        
-        
+        }   
+    }   
+}
+
+//input & output
+abstract class IO extends Statement{}
+
+class Input extends IO{
+	Variable v;
+    
+    public Input(String name) {
+    	v = new Variable(name);
+    }
+    public Input(String name, Expression arr1) {
+    	v = new Variable(name, arr1);
+    }
+    public Input(String name, Expression arr1, Expression arr2) {
+    	v = new Variable(name, arr1, arr2);
     }
     
+    public void display(int n){
+    	for(int i=0; i<n; i++){
+        	System.out.print("\t");
+        }
+    	System.out.println("Input: ");
+    	n++;
+    	v.display(n);
+        
+    }
+}
+
+class Output extends IO{
+	ArrayList<Expression> exprs = new ArrayList<Expression>();
+	
+	public Output() {}
+	public void add(Expression e) {
+		exprs.add(e);
+	}
+	public void display(int n){
+    	for(int i=0; i<n; i++){
+        	System.out.print("\t");
+        }
+    	System.out.println("Output: ");
+    	n++;
+    	for(Expression expr : exprs)
+    		expr.display(n);
+        
+    }
 }
 
 class Loop extends Statement {
@@ -260,9 +303,9 @@ class Variable extends Expression {
         	System.out.print("\t");
         }
     	if(arrA != null && arrB != null) {
-    		System.out.println("Variable: " + id+"\tArrSize: " + arrA + " x " + arrB);
+    		System.out.println("Variable: " + id+"\tArrPointer: " + arrA + " x " + arrB);
     	}else if(arrA != null && arrB == null) {
-    		System.out.println("Variable: " + id+"\tArrSize: " + arrA);
+    		System.out.println("Variable: " + id+"\tArrPointer: " + arrA);
     	}else {
     		System.out.println("Variable: " + id);
     	}
@@ -272,7 +315,7 @@ class Variable extends Expression {
 	        System.out.print("\t");
 	    }
     	arrA = a;
-	 	System.out.println("Variable: " + id +"\tArrSize: " + arrA);
+	 	System.out.println("Variable: " + id +"\tArrPointer: " + arrA);
 	}
 	public void display(int n, Expression a, Expression b){
 		for(int i=0; i<n; i++){
@@ -280,7 +323,7 @@ class Variable extends Expression {
 	    }
 		arrA = a;
 		arrB = b;
-		System.out.println("Variable: " + id+"\tArrSize: " + arrA + " x " + arrB);
+		System.out.println("Variable: " + id+"\tArrPointer: " + arrA + " x " + arrB);
 	}
 
 }

@@ -17,9 +17,9 @@ public class Lexer {
     private final char eolnCh = '\n';
     private final char eofCh = '\004';
     private static final String[] postpositions = {
-          "은", "는", "을", "를","같다","다르다",
-         "이라면", "라면", "이다", "다",
-         "와", "과", "로", "보다","으로"
+    		 "은", "는", "을", "를","같다","다르다",
+             "이라면", "라면", "이다", "다",
+             "와", "과", "로", "보다","으로"
     };
     private Token postposition = null;
     
@@ -185,7 +185,7 @@ public class Lexer {
     }
 
     static public void main ( String[] argv ) {
-    	Lexer lexer = new Lexer("C:\\Users\\HYEJI\\eclipse-workspace\\compiler_teamproject\\src\\compiler_teamproject\\test3.txt");
+    	Lexer lexer = new Lexer("C:\\Users\\HYEJI\\Documents\\카카오톡 받은 파일\\test4.txt");
         Token tok = lexer.next( );
         while (tok != Token.eofTok) {
             System.out.println(tok.toString());
