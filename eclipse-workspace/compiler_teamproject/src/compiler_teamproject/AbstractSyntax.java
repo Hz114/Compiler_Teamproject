@@ -52,15 +52,29 @@ class Declaration {
     //배열을 출력하기 위한 변수선언
     Variable arrA = null;
     Variable arrB = null;
+    int arrA_integer = -1;
+    int arrB_integer = -1;
+    String str_arrA;
+    String str_arrB;
+    int arrayCheck = 0;
 
     Declaration (Variable var, Type type) {
         v = var; t = type;
+        arrayCheck = 0;
     }
     Declaration (Variable var, Type type, Variable a) {
         v = var; t = type; arrA = a;
+        str_arrA = a.toString();
+		arrA_integer =Integer.parseInt(str_arrA);
+		arrayCheck = 1;
     }
     Declaration (Variable var, Type type, Variable a, Variable b) {
         v = var; t = type; arrA = a; arrB = b; 
+        str_arrA = a.toString();
+		str_arrB = b.toString();
+		arrA_integer =Integer.parseInt(str_arrA);
+		arrB_integer =Integer.parseInt(str_arrB);
+		arrayCheck = 1;
     }
     public void display(int n){
     	for(int i=0; i<n; i++){
@@ -129,6 +143,11 @@ class Assignment extends Statement {
     //배열 출력을 위한 변수 선언
     Expression arrayA = null;
     Expression arrayB = null;
+    int arrA_integer = -1;
+    int arrB_integer = -1;
+    String str_arrA;
+    String str_arrB;
+    int arrayCheck = 0;
 
     Assignment (Variable t, Expression e) {
         target = t;
@@ -139,6 +158,9 @@ class Assignment extends Statement {
         source = e;
         
         arrayA = arrA;
+        str_arrA = arrayA.toString();
+		arrA_integer =Integer.parseInt(str_arrA);
+		arrayCheck = 1;
         
     }
     Assignment (Variable t, Expression e,Expression arrA, Expression arrB) {
@@ -147,6 +169,11 @@ class Assignment extends Statement {
 
         arrayA = arrA;
         arrayB = arrB;
+        str_arrA = arrayA.toString();
+		str_arrB = arrayB.toString();
+		arrA_integer =Integer.parseInt(str_arrA);
+		arrB_integer =Integer.parseInt(str_arrB);
+		arrayCheck = 1;
     }
     
     public void display(int n){
@@ -277,16 +304,29 @@ class Variable extends Expression {
 	// 배열 형식 추가 Hz---완성
     private String id;
     private Expression arrA = null, arrB = null;
+    int arrA_integer = -1;
+    int arrB_integer = -1;
+    String str_arrA;
+    String str_arrB;
+    int arrayCheck = 0;
 
     Variable (String s) { id = s; }
     Variable (String s, Expression a) {
     	id = s;
     	arrA = a;
+    	str_arrA = a.toString();
+		arrA_integer =Integer.parseInt(str_arrA);
+		arrayCheck = 1;
     }
     Variable (String s, Expression a, Expression b) {
     	id = s;
     	arrA = a;
     	arrB = b;
+    	str_arrA = a.toString();
+		str_arrB = b.toString();
+		arrA_integer =Integer.parseInt(str_arrA);
+		arrB_integer =Integer.parseInt(str_arrB);
+		arrayCheck = 1;
     }
     
     public String toString( ) { return id; }

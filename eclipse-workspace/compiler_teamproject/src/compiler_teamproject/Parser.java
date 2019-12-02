@@ -1,6 +1,5 @@
 package compiler_teamproject;
 
-import java.util.ArrayList;
 
 public class Parser {
     // Recursive descent parser that inputs a C++Lite program and 
@@ -10,11 +9,13 @@ public class Parser {
   
     Token token;          // current token from the input stream
     Lexer lexer;
-    
+    TypeCheckerValue typeChecker = new TypeCheckerValue();
     
     public static int n;
     public static int assignFlag = 0;
     public static int pass = 0;
+    
+    
     
     public Parser(Lexer ts) { // Open the C++Lite source program
         lexer = ts;                          // as a token stream, and
@@ -45,7 +46,7 @@ public class Parser {
     }
   
     public Program program() {
-    	// ÇÁ·Î±×·¥À» ½ÃÀÛÇÑ´Ù  Å©°Ô ¼±¾ğºÎ¿Í ½ÇÇàºÎ·Î ±¸¼º 
+    	// í”„ë¡œê·¸ë¨ì„ ì‹œì‘í•œë‹¤  í¬ê²Œ ì„ ì–¸ë¶€ì™€ ì‹¤í–‰ë¶€ë¡œ êµ¬ì„± 
         // Program --> Declarations Statements
     	
     	Declarations d = declarations();
@@ -55,7 +56,7 @@ public class Parser {
     }
   
     private Declarations declarations () {
-    	// ¼±¾ğºÎ´Â ¿©·¯ÁÙ ¼±¾ğ µÉ¼ö ÀÖ´Ù (0¶Ç´Â n)
+    	// ì„ ì–¸ë¶€ëŠ” ì—¬ëŸ¬ì¤„ ì„ ì–¸ ë ìˆ˜ ìˆë‹¤ (0ë˜ëŠ” n)
         // Declarations --> { Declaration }
     	
     	Declarations decls = new Declarations();
@@ -68,22 +69,22 @@ public class Parser {
     }
   
     private void declaration (Declarations decls) {
-    	// º¯¼ö ¼±¾ğºÎ¿¡ ´ëÇØ Type°ú identifierÀ» ³ª´«´Ù
-        // Declaration --> Type Identifier (Àº/´Â)[ '['Integer']' [ '['Integer']' ] ]
-    	//										{ ,Identifier  [ '['Integer']' [ '['Integer']'] ] } (ÀÌ´Ù/´Ù)
+    	// ë³€ìˆ˜ ì„ ì–¸ë¶€ì— ëŒ€í•´ Typeê³¼ identifierì„ ë‚˜ëˆˆë‹¤
+        // Declaration --> Type Identifier (ì€/ëŠ”)[ '['Integer']' [ '['Integer']' ] ]
+    	//										{ ,Identifier  [ '['Integer']' [ '['Integer']'] ] } (ì´ë‹¤/ë‹¤)
         
     	Variable var;
-    	Variable arrA, arrB; //¹è¿­ÀÇ Å©±â¸¦ ÀúÀåÇÏ´Â º¯¼ö
+    	Variable arrA, arrB; //ë°°ì—´ì˜ í¬ê¸°ë¥¼ ì €ì¥í•˜ëŠ” ë³€ìˆ˜
     	Declaration decl ;
     	Type t = type();
    
     	int cnt = 0;
     	
-    	match(TokenType.MeaningLess); // (Àº/´Â)
+    	match(TokenType.MeaningLess); // (ì€/ëŠ”)
 		
     	do {
     		
-    		//¹è¿­ Å©±â¸¦ ÃÊ±âÈ­ ½ÃÅ²´Ù.
+    		//ë°°ì—´ í¬ê¸°ë¥¼ ì´ˆê¸°í™” ì‹œí‚¨ë‹¤.
     		arrA = null;
     		arrB = null;
     		
@@ -91,39 +92,42 @@ public class Parser {
     			token = lexer.next();
     		}
     		
-    		var = new Variable(match(TokenType.Identifier)); // º¯¼ö¸í
+    		var = new Variable(match(TokenType.Identifier)); // ë³€ìˆ˜ëª…
         	
-        	if(token.type().equals(TokenType.LeftBracket)){ // [ À» ¸¸³µÀ» ¶§ == ¹è¿­ÀÎ °æ¿ì 
+        	if(token.type().equals(TokenType.LeftBracket)){ // [ ì„ ë§Œë‚¬ì„ ë•Œ == ë°°ì—´ì¸ ê²½ìš° 
             	match(TokenType.LeftBracket);
             	arrA = new Variable(match(TokenType.IntLiteral));
             	match(TokenType.RightBracket);
-            	if(token.type().equals(TokenType.LeftBracket)){ // [ À» ¶Ç ¸¸³µÀ» ¶§ == ÀÌÂ÷¿ø ¹è¿­ÀÎ °æ¿ì
+            	if(token.type().equals(TokenType.LeftBracket)){ // [ ì„ ë˜ ë§Œë‚¬ì„ ë•Œ == ì´ì°¨ì› ë°°ì—´ì¸ ê²½ìš°
             		match(TokenType.LeftBracket);
             		arrB = new Variable(match(TokenType.IntLiteral));
                 	match(TokenType.RightBracket);
             	}
         	}    
         	
-        	if(arrA == null && arrB == null) { //¹è¿­ÀÌ ¾Æ´Ñ°æ¿ì 
+        	if(arrA == null && arrB == null) { //ë°°ì—´ì´ ì•„ë‹Œê²½ìš° 
         		decl = new Declaration(var,t);
+        		typeChecker.InsertTypeChecker(var,t);
         		decls.add(decl);
-        	}else if(arrA != null && arrB == null) { //1Â÷¿ø ¹è¿­
+        	}else if(arrA != null && arrB == null) { //1ì°¨ì› ë°°ì—´
         		decl = new Declaration(var,t, arrA);
+        		typeChecker.InsertTypeChecker(var,t, arrA);
         		decls.add(decl);
-        	}else if(arrA != null && arrB != null) { //2Ä¡¿ø ¹è¿­
+        	}else if(arrA != null && arrB != null) { //2ì¹˜ì› ë°°ì—´
         		decl = new Declaration(var,t, arrA, arrB);
+        		typeChecker.InsertTypeChecker(var,t, arrA, arrB);
         		decls.add(decl);
         	}
     	}while(token.type().equals(TokenType.Comma));
     	
-    	match(TokenType.MeaningLess); // (ÀÌ´Ù/´Ù)
+    	match(TokenType.MeaningLess); // (ì´ë‹¤/ë‹¤)
     }
     	
     	
     
   
     private Type type () {
-        // Type --> Á¤¼ö | ¸íÁ¦ | ¼Ò¼ö | ¹®ÀÚ
+        // Type --> ì •ìˆ˜ | ëª…ì œ | ì†Œìˆ˜ | ë¬¸ì
     	Type t = null;
     	
         if(token.type().equals(TokenType.Int)){
@@ -169,7 +173,7 @@ public class Parser {
   
     private Block statements () {
         // Block --> '{' Statements '}'
-        Block b = new Block();
+    	Block b = new Block();
         
         while( token.type().equals(TokenType.While) ||
         		token.type().equals(TokenType.If) ||
@@ -184,77 +188,78 @@ public class Parser {
   
     
     private Assignment assignment () {
-    	// Assignment --> identifier (Àº | ´Â) expression [ÀÌ]´Ù
-    	// ¹è¿­ ex) ¼ıÀÚ[0][1]Àº (3 ´õÇÏ±â ¤©¤©) ³ª´©±â ¼öcc01ÀÌ´Ù
+    	// Assignment --> identifier (ì€ | ëŠ”) expression [ì´]ë‹¤
+    	// ë°°ì—´ ex) ìˆ«ì[0][1]ì€ (3 ë”í•˜ê¸° ã„¹ã„¹) ë‚˜ëˆ„ê¸° ìˆ˜cc01ì´ë‹¤
     	
     	assignFlag = 1;
     	Variable t = new Variable(match(TokenType.Identifier));
     	//e = new Variable(match(TokenType.Identifier));
-        
-        //*****¹è¿­È®ÀÎ*******
+
     	Expression arrA = null, arrB = null;
     	
-    	if(token.type().equals(TokenType.LeftBracket)){ // [ À» ¸¸³µÀ» ¶§ == ¹è¿­ÀÎ °æ¿ì 
+    	if(token.type().equals(TokenType.LeftBracket)){ // [ ì„ ë§Œë‚¬ì„ ë•Œ == ë°°ì—´ì¸ ê²½ìš° 
         	match(TokenType.LeftBracket);
         	arrA = expression();
         	match(TokenType.RightBracket);
-        	if(token.type().equals(TokenType.LeftBracket)){ // [ À» ¶Ç ¸¸³µÀ» ¶§ == ÀÌÂ÷¿ø ¹è¿­ÀÎ °æ¿ì
+        	if(token.type().equals(TokenType.LeftBracket)){ // [ ì„ ë˜ ë§Œë‚¬ì„ ë•Œ == ì´ì°¨ì› ë°°ì—´ì¸ ê²½ìš°
         		match(TokenType.LeftBracket);
         		arrB = expression();
             	match(TokenType.RightBracket);
         	}
     	}
-    	//*****¹è¿­È®ÀÎ ³¡*****
     	
-    	match(TokenType.MeaningLess); // (Àº|´Â)
+    	match(TokenType.MeaningLess); // (ì€|ëŠ”)
 
     	Expression e = expression();
-    	match(TokenType.MeaningLess); // (´Ù|ÀÌ´Ù)
+    	match(TokenType.MeaningLess); // (ë‹¤|ì´ë‹¤)
     	assignFlag = 0;
     	
 
-    	if(arrA != null && arrB != null) { //2Â÷¿ø ¹è¿­
+    	if(arrA != null && arrB != null) { //2ì°¨ì› ë°°ì—´
+    		typeChecker.valCheck(t.toString(), arrA, arrB);
         	return new Assignment(t,e, arrA, arrB);
-    	}else if(arrA != null && arrB == null) { //1Â÷¿ø ¹è¿­
+    	}else if(arrA != null && arrB == null) { //1ì°¨ì› ë°°ì—´
+    		typeChecker.valCheck(t.toString(), arrA);
         	return new Assignment(t,e, arrA);
-    	}else{ //±âº» (¹è¿­ÀÌ ¾Æ´Ñ°æ¿ì)
+    	}else{ //ê¸°ë³¸ (ë°°ì—´ì´ ì•„ë‹Œê²½ìš°)
+    		typeChecker.valCheck(t.toString());
         	return new Assignment(t,e);
     	}
     }
   
     private Conditional ifStatement () {
-        // IfStatement --> ¸¸¾à 'expression' (ÀÌ¶ó¸é | ¶ó¸é) statements ³¡ [ ±×·¸Áö ¾ÊÀ¸¸é  statements ³¡] 
+        // IfStatement --> ë§Œì•½ 'expression' (ì´ë¼ë©´ | ë¼ë©´) statements ë [ ê·¸ë ‡ì§€ ì•Šìœ¼ë©´  statements ë] 
     	Statement s = new Skip();
 
-    	match(TokenType.If); // ¸¸¾à
+    	match(TokenType.If); // ë§Œì•½
     	Expression e = expression();
 
-    	match(TokenType.MeaningLessIf); // (ÀÌ¶ó¸é |¶ó¸é) 
+    	match(TokenType.MeaningLessIf); // (ì´ë¼ë©´ |ë¼ë©´) 
     	s = statements();
     	
-    	if(token.type().equals(TokenType.Else)){ // ±×·¸Áö¾ÊÀ¸¸éÀÏ °æ¿ì
-    		match(TokenType.Else); // (±×·¸Áö¾ÊÀ¸¸é)
+    	if(token.type().equals(TokenType.Else)){ // ê·¸ë ‡ì§€ì•Šìœ¼ë©´ì¼ ê²½ìš°
+    		match(TokenType.Else); // (ê·¸ë ‡ì§€ì•Šìœ¼ë©´)
     		Statement elseS = statement();
-        	match(TokenType.ControlEnd); // (³¡)
+        	match(TokenType.ControlEnd); // (ë)
 
-    		return new Conditional(e,s,elseS); // ¸¸¾à 'expression' (ÀÌ¶ó¸é | ¶ó¸é) statements ³¡  ±×·¸Áö ¾ÊÀ¸¸é  statements ³¡
+    		return new Conditional(e,s,elseS); // ë§Œì•½ 'expression' (ì´ë¼ë©´ | ë¼ë©´) statements ë  ê·¸ë ‡ì§€ ì•Šìœ¼ë©´  statements ë
     	}
     	else {
-        	match(TokenType.ControlEnd); // (³¡)
-        	return new Conditional(e,s); // ¸¸¾à 'expression' (ÀÌ¶ó¸é | ¶ó¸é) statements ³¡ 
+        	match(TokenType.ControlEnd); // (ë)
+        	return new Conditional(e,s); // ë§Œì•½ 'expression' (ì´ë¼ë©´ | ë¼ë©´) statements ë 
     	}
     }
   
     private Loop whileStatement () {
-        // WhileStatement --> ¹İº¹ 'expression' (ÀÌ¶ó¸é | ¶ó¸é) statements (³¡)
+        // WhileStatement --> ë°˜ë³µ 'expression' (ì´ë¼ë©´ | ë¼ë©´) statements (ë)
     	Statement s = new Skip();
     	
-    	match(TokenType.While); // (¹İº¹)
+    	match(TokenType.While); // (ë°˜ë³µ)
     	Expression e = expression(); 
-    	match(TokenType.MeaningLessIf); // (ÀÌ¶ó¸é | ¶ó¸é)
+    	match(TokenType.MeaningLessIf); // (ì´ë¼ë©´ | ë¼ë©´)
     	
     	s = statements(); 
-    	match(TokenType.ControlEnd); // (³¡)
+    	match(TokenType.ControlEnd); // (ë)
 
     	return new Loop(e,s); 
     }
@@ -275,14 +280,17 @@ public class Parser {
                match(TokenType.RightBracket);
            }
         }
-        match(TokenType.MeaningLess); // Ãß°¡!!!!!!!!!!!!!!!
+        match(TokenType.MeaningLess);
         
-        if(arr1 != null && arr2 != null) { //2Â÷¿ø ¹è¿­
+        if(arr1 != null && arr2 != null) { //2ì°¨ì› ë°°ì—´
+        	typeChecker.valCheck(id, arr1, arr2);
             return new Input(id, arr1, arr2);
-        }else if(arr1 != null && arr2 == null) { //1Â÷¿ø ¹è¿­
-            return new Input(id, arr1);
-        }else{ //±âº» (¹è¿­ÀÌ ¾Æ´Ñ°æ¿ì)
-            return new Input(id);
+        }else if(arr1 != null && arr2 == null) { //1ì°¨ì› ë°°ì—´
+        	typeChecker.valCheck(id, arr1);
+        	return new Input(id, arr1);
+        }else{ //ê¸°ë³¸ (ë°°ì—´ì´ ì•„ë‹Œê²½ìš°)
+        	typeChecker.valCheck(id);
+        	return new Input(id);
         }
      }
      
@@ -298,16 +306,16 @@ public class Parser {
            out.add(expression());
            assignFlag = 0;
         }
-        match(TokenType.MeaningLess); // Ãß°¡!!!!!!!!!!!!!!!
+        match(TokenType.MeaningLess);
         
         return out;
     }
 
     private Expression expression () {
-        //Expression --> Conjunction { ¶Ç´Â Conjunction }
+        //Expression --> Conjunction { ë˜ëŠ” Conjunction }
 
     	Expression e = conjunction();
-    	while(token.type().equals(TokenType.Or)){ // (¶Ç´Â)ÀÏ °æ¿ì
+    	while(token.type().equals(TokenType.Or)){ // (ë˜ëŠ”)ì¼ ê²½ìš°
             Operator op = new Operator(match(token.type()));
             Expression c2 = conjunction();
             e = new Binary(op, e, c2);
@@ -316,10 +324,10 @@ public class Parser {
     }
   
     private Expression conjunction () {
-    	// Conjunction --> Equality { ±×¸®°í Equality }
+    	// Conjunction --> Equality { ê·¸ë¦¬ê³  Equality }
     	
     	Expression e = equality();
-	    while(token.type().equals(TokenType.And)){ // (±×¸®°í)ÀÏ °æ¿ì 
+	    while(token.type().equals(TokenType.And)){ // (ê·¸ë¦¬ê³ )ì¼ ê²½ìš° 
 	        Operator op = new Operator(match(token.type()));
 	        Expression e2 = equality();
 	        e = new Binary(op, e, e2);
@@ -328,15 +336,15 @@ public class Parser {
     }
   
     private Expression equality () {
-        // Equality -> Relation [ (Àº | ´Â) Relation (¿Í | °ú) EquOp ]
-    	// µÎ ½ÄÀÌ (°°ÀºÁö|´Ù¸¥Áö) È®ÀÎ
+        // Equality -> Relation [ (ì€ | ëŠ”) Relation (ì™€ | ê³¼) EquOp ]
+    	// ë‘ ì‹ì´ (ê°™ì€ì§€|ë‹¤ë¥¸ì§€) í™•ì¸
     	
     	Expression e = relation();
     	if(token.type().equals(TokenType.MeaningLess) && assignFlag == 0
     			&& !token.type().equals(TokenType.MeaningLessIf) && pass == 0){
-        	match(TokenType.MeaningLess); // (Àº|´Â)
+        	match(TokenType.MeaningLess); // (ì€|ëŠ”)
         	Expression r2 = relation();
-        	match(TokenType.MeaningLess); // (¿Í|°ú)
+        	match(TokenType.MeaningLess); // (ì™€|ê³¼)
         	if(isEqualityOp()){
         		Operator op = new Operator(match(token.type()));
                 e = new Binary(op, e, r2);
@@ -350,8 +358,8 @@ public class Parser {
     
     
     private Expression relation (){
-        // Relation --> Addition [ (Àº | ´Â) Addition º¸´Ù RelOp ]
-    	// µÎ ½ÄÀÇ ´ë¼Ò °ü°è¸¦ È®ÀÎ
+        // Relation --> Addition [ (ì€ | ëŠ”) Addition ë³´ë‹¤ RelOp ]
+    	// ë‘ ì‹ì˜ ëŒ€ì†Œ ê´€ê³„ë¥¼ í™•ì¸
     	
     	Expression e = addition();
     	if(token.type().equals(TokenType.MeaningLess) && assignFlag == 0
@@ -359,7 +367,7 @@ public class Parser {
     			&& !token.type().equals(TokenType.MeaningLessThan)
     			&& !token.type().equals(TokenType.MeaningLessWith)){
     		
-        	match(TokenType.MeaningLess); //(Àº|´Â)
+        	match(TokenType.MeaningLess); //(ì€|ëŠ”)
             Expression r  = relation();
         	
             if(token.type().equals(TokenType.MeaningLessWith) || token.type().equals(TokenType.MeaningLessThan) ){
@@ -398,13 +406,13 @@ public class Parser {
     }
   
     private Expression term () {
-    	// Term --> Factor { ( { MulOp Factor } | { (À» | ¸¦) Factor ·Î ³ª´« ³ª¸ÓÁö } ) }
+    	// Term --> Factor { ( { MulOp Factor } | { (ì„ | ë¥¼) Factor ë¡œ ë‚˜ëˆˆ ë‚˜ë¨¸ì§€ } ) }
         Expression e = factor();
         while ((isMultiplyOp() ||token.type().equals(TokenType.MeaningLessRemain))) {
         	if(token.type().equals(TokenType.MeaningLessRemain)){
-            	match(TokenType.MeaningLessRemain); //(À»|¸¦)
+            	match(TokenType.MeaningLessRemain); //(ì„|ë¥¼)
                 Expression term2 = factor();
-            	match(TokenType.MeaningLess); // (·Î ³ª´« ³ª¸ÓÁö)
+            	match(TokenType.MeaningLess); // (ë¡œ ë‚˜ëˆˆ ë‚˜ë¨¸ì§€)
 	            Operator op = new Operator(match(token.type()));
 	            e = new Binary(op, e, term2);
         	}
@@ -430,36 +438,35 @@ public class Parser {
   
     private Expression primary () {
     	// Primary --> Identifier [ [Expression] ] | Literal | ( Expression ) | 
-        // ¹è¿­ex) ¤©¤©Àº floatv[0] ´õÇÏ±â 23ÀÌ´Ù
+        // ë°°ì—´ex) ã„¹ã„¹ì€ floatv[0] ë”í•˜ê¸° 23ì´ë‹¤
     	Expression e = null;
         
         if (token.type().equals(TokenType.Identifier)) {
             
         	String temp = match(TokenType.Identifier);
-        	//e = new Variable(match(TokenType.Identifier));
-          
-            //*****¹è¿­È®ÀÎ*******
-        	
+
         	Expression arrA = null, arrB = null;
         	
-        	if(token.type().equals(TokenType.LeftBracket)){ // [ À» ¸¸³µÀ» ¶§ == ¹è¿­ÀÎ °æ¿ì 
+        	if(token.type().equals(TokenType.LeftBracket)){ // [ ì„ ë§Œë‚¬ì„ ë•Œ == ë°°ì—´ì¸ ê²½ìš° 
             	match(TokenType.LeftBracket);
             	arrA = expression();
             	match(TokenType.RightBracket);
-            	if(token.type().equals(TokenType.LeftBracket)){ // [ À» ¶Ç ¸¸³µÀ» ¶§ == ÀÌÂ÷¿ø ¹è¿­ÀÎ °æ¿ì
+            	if(token.type().equals(TokenType.LeftBracket)){ // [ ì„ ë˜ ë§Œë‚¬ì„ ë•Œ == ì´ì°¨ì› ë°°ì—´ì¸ ê²½ìš°
             		match(TokenType.LeftBracket);
             		arrB = expression();
                 	match(TokenType.RightBracket);
             	}
         	}
-        	//*****¹è¿­È®ÀÎ ³¡*****
         	
         	if(arrA != null  && arrB != null) {
         		e = new Variable(temp, arrA, arrB);
+        		typeChecker.valCheck(temp, arrA, arrB);
         	}else if(arrA != null  && arrB == null) {
         		e = new Variable(temp, arrA);
+        		typeChecker.valCheck(temp, arrA);
         	}else {
         		e = new Variable(temp);
+        		typeChecker.valCheck(temp);
         	}
         } 
         else if (isLiteral()) {	
@@ -504,7 +511,7 @@ public class Parser {
     		value = new BoolValue(Boolean.valueOf(token.value()));
     	} 
     	
-        return value;  // student exercise
+        return value;
     }
   
 
@@ -556,7 +563,8 @@ public class Parser {
     
     public static void main(String args[]) {
     	System.out.println(System.getProperty("user.dir"));
-        Parser parser  = new Parser(new Lexer("C:\\Users\\HYEJI\\Documents\\Ä«Ä«¿ÀÅå ¹ŞÀº ÆÄÀÏ\\test4.txt"));
+    	Parser parser  = new Parser(new Lexer("C:\\Users\\HYEJI\\eclipse-workspace\\compiler_teamproject_save\\src\\compiler_teamproject_save\\test.txt"));
+    	//Parser parser  = new Parser(new Lexer("C:\\Users\\HYEJI\\Documents\\ì¹´ì¹´ì˜¤í†¡ ë°›ì€ íŒŒì¼\\test4.txt"));
         Program prog = parser.program();
         prog.display();           // display abstract syntax tree
     } //main
