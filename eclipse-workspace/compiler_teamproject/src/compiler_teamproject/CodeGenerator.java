@@ -356,6 +356,8 @@ public class CodeGenerator {
 	public static void main(String args[]) {
 		Parser parser = new Parser(new Lexer("C:\\Users\\HYEJI\\eclipse-workspace\\compiler_teamproject_save\\src\\compiler_teamproject_save\\test.txt"));
 		Program prog = parser.program();
+		//error
+		TypeCheckerOperator.V(prog);
 		TypeMap map = TypeCheckerOperator.typing(prog.decpart);
 		CodeGenerator G = new CodeGenerator(map, prog);
 		String retStr = G.getCode();

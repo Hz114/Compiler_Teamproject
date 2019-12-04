@@ -1,4 +1,4 @@
-package compiler_teamproject_save;
+package compiler_teamproject;
 
 import java.util.*;
 
@@ -27,8 +27,8 @@ public class TypeCheckerValue {
 		int i = 0;
 		while(idx >= i) {
 			if(iden.equals(identifier[i])) {
-				System.err.println("Error: " + iden);
-				System.err.println(iden + "란 변수명이 중복 선언되었습니다");
+				System.err.println("Syntax error: line: " + iden);
+				System.err.println("expecting: " + iden + "란 변수명이 중복 선언되었습니다");
 				System.exit(1);
 			}
 			i++;
@@ -60,14 +60,14 @@ public class TypeCheckerValue {
 		idx++;
 	}
 	
-	void valCheck(String iden) {
+	void valCheck(String iden, int line) {
 		int i = 0;
 		while(true) {
 			if(iden.equals(identifier[i])) {
 				break;
 			}else if(idx == i) {
-				System.err.println("Error: " + iden);
-				System.err.println(iden + "이란 변수가 선언되지 않았습니다");
+				System.err.println("Syntax error: line: " + line);
+				System.err.println("expecting: " + iden + "란 변수가 선언되지 않았습니다");
 				System.exit(1);
 			}
 			i++;
@@ -75,7 +75,7 @@ public class TypeCheckerValue {
 	}
 	
 	//1차원 배열 사이즈 비교
-	void valCheck(String iden, Expression a) {
+	void valCheck(String iden, Expression a, int line) {
 		int i = 0;
 		int arrA = Integer.parseInt(a.toString());
 		
@@ -83,26 +83,26 @@ public class TypeCheckerValue {
 			if(iden.equals(identifier[i])) {
 				break;
 			}else if(idx == i) {
-				System.err.println("Error: " + iden + '[' + arrA + ']');
-				System.err.println(iden + "이란 변수가 선언되지 않았습니다");
+				System.err.println("Syntax error: line: " + line);
+				System.err.println("expecting: " + iden + '[' + arrA + "]란 변수가 선언되지 않았습니다");
 				System.exit(1);
 			}
 			i++;
 		}
 		if(arrA > arrSize[i][0]) {
-			System.err.println("Error: " + iden + '[' + arrA + ']');
+			System.err.println("Syntax error: line: " + line);
 			if(arrSize[i][1] == 0) {
-				System.err.println(iden + "의 배열 크기는 [" + arrSize[i][0] + "] 입니다");
+				System.err.println("expecting: " + iden + '[' + arrA + "]의 배열 크기는 [" + arrSize[i][0] + "]입니다");
 				System.exit(1);
 			}else {
-				System.err.println(iden + "의 배열 크기는 [" + arrSize[i][0] + "][" + arrSize[i][1] + "] 입니다");
+				System.err.println("expecting: " + iden + '[' + arrA + "]의 배열 크기는 [" + arrSize[i][0] + "][" + arrSize[i][1] + "]입니다");
 				System.exit(1);
 			}
 		}
 	}
 	
 	//2차원 배열 사이즈 비교
-	void valCheck(String iden, Expression a, Expression b) {
+	void valCheck(String iden, Expression a, Expression b, int line) {
 		int i = 0;	
 		int arrA = Integer.parseInt(a.toString());
 		int arrB = Integer.parseInt(b.toString());
@@ -111,15 +111,15 @@ public class TypeCheckerValue {
 			if(iden.equals(identifier[i])) {
 				break;
 			}else if(idx == i) {
-				System.err.println("Error: " + iden + '[' + arrA + "][" + arrB + ']');
-				System.err.println(iden + "이란 변수가 선언되지 않았습니다");
+				System.err.println("Syntax error: line: " + line);
+				System.err.println("expecting: " + iden + '[' + arrA + "][" + arrB + "]란 변수가 선언되지 않았습니다");
 				System.exit(1);
 			}
 			i++;
 		}
 		if(arrA > arrSize[i][0] || arrB > arrSize[i][1]) {
-			System.err.println("Error: " + iden + '[' + arrA + "][" + arrB + ']');
-			System.err.println(iden + "의 배열 크기는  [" + arrSize[i][0] + "][" + arrSize[i][1] + "] 입니다");
+			System.err.println("Syntax error: line: " + line);
+			System.err.println("expecting: " +  iden + '[' + arrA + "][" + arrB + "]의 배열 크기는  [" + arrSize[i][0] + "][" + arrSize[i][1] + "] 입니다");
 			System.exit(1);
 		}
 	}

@@ -16,11 +16,16 @@ public class Lexer {
     private int col = 1;
     private final char eolnCh = '\n';
     private final char eofCh = '\004';
-    private static final String[] postpositions = {
-    		 "은", "는", "을", "를","같다","다르다",
-             "이라면", "라면", "이다", "다",
-             "와", "과", "로", "보다","으로"
-    };
+    private static final String[] postpositions = { 
+   		 "은", "는","이", "가",  "을", "를","같다","다르다",
+             "이다", "다","면","라면","이라면","참", "거짓",
+            "와", "과", "로", "보다","으로"
+   };
+    
+
+    
+    private int codeLine = 1;
+    
     private Token postposition = null;
     
     public Lexer (String fileName) { // source filename
@@ -93,8 +98,17 @@ public class Lexer {
           }
           else switch (ch) {
             case ' ': case '\t': case '\r': case eolnCh:
-                ch = nextChar();
+                if(ch == eolnCh) {
+                	codeLine++;
+                }
+            	ch = nextChar();
                 break;
+            /**
+            case eolnCh: 
+                ch = nextChar();
+                line += 1;
+                break;
+            **/
             case '/':
                ch = nextChar();
                 if (ch != '/')  error("not correct token, processing comment //");
@@ -183,9 +197,13 @@ public class Lexer {
         System.err.println("Error: column " + col + " " + msg);
         System.exit(1);
     }
+    
+    public int getLine() {
+    	return codeLine;
+    }
 
     static public void main ( String[] argv ) {
-    	Lexer lexer = new Lexer("C:\\Users\\HYEJI\\Documents\\카카오톡 받은 파일\\test4.txt");
+    	Lexer lexer = new Lexer("C:\\Users\\HYEJI\\eclipse-workspace\\compiler_teamproject_save\\src\\compiler_teamproject_save\\test.txt");
         Token tok = lexer.next( );
         while (tok != Token.eofTok) {
             System.out.println(tok.toString());
