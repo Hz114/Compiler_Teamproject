@@ -45,28 +45,29 @@ public class Token {
    public static final Token outputTok = new Token(TokenType.Output);
 
    private static final String[] reserved = {
-         "ì •ìˆ˜", "ì‹¤ìˆ˜", "ëª…ì œ", "ë¬¸ì", "ì°¸", "ê±°ì§“",
-         "ë§Œì•½", "ê·¸ë ‡ì§€ì•Šìœ¼ë©´", "ë°˜ë³µ", "ë",
-         "ê°™ë‹¤", "ë‹¤ë¥´ë‹¤", "ì‘ë‹¤", "ì‘ê±°ë‚˜ê°™ë‹¤", "í¬ë‹¤", "í¬ê±°ë‚˜ê°™ë‹¤",
-         "ê±°ì§“ë§ìŸì´", "ë§ˆì´ë„ˆìŠ¤", "ë¹¼ê¸°", "ë”í•˜ê¸°", 
-         "ê³±í•˜ê¸°", "ë‚˜ëˆ„ê¸°", "ë‚˜ëˆˆë‚˜ë¨¸ì§€", "ê·¸ë¦¬ê³ ", "ë˜ëŠ”",
-         "ì€", "ëŠ”", "ì„", "ë¥¼",
-         "ì´ë¼ë©´", "ë¼ë©´", "ì´ë‹¤", "ë‹¤",
-         "ì™€", "ê³¼", "ë¡œ", "ìœ¼ë¡œ","ë³´ë‹¤",
-         "ì…ë ¥", "ì¶œë ¥"
-   };
+         "Á¤¼ö", "½Ç¼ö", "¸íÁ¦", "¹®ÀÚ", "Âü", "°ÅÁş",
+         "¸¸¾à", "±×·¸Áö¾ÊÀ¸¸é", "¹İº¹", "³¡",
+         "°°´Ù", "´Ù¸£´Ù", "ÀÛ´Ù", "ÀÛ°Å³ª°°´Ù", "Å©´Ù", "Å©°Å³ª°°´Ù",
+         "°ÅÁş¸»ÀïÀÌ", "¸¶ÀÌ³Ê½º", "»©±â", "´õÇÏ±â", 
+         "°öÇÏ±â", "³ª´©±â", "³ª´«³ª¸ÓÁö", "±×¸®°í", "¶Ç´Â",
+         "Àº", "´Â", "À»", "¸¦", "ÀÌ", "°¡",
+         "¸é","ÀÌ¶ó¸é", "¶ó¸é","ÀÌ´Ù", "´Ù",
+         "¿Í", "°ú", "·Î", "À¸·Î","º¸´Ù",
+         "ÀÔ·Â", "Ãâ·Â"
+	};
    
-    private static final Token[] token = {
+   private static final Token[] token = {
           intTok, floatTok, boolTok, charTok, trueTok, falseTok,
           ifTok, elseTok, whileTok, ctrlEndTok,
           eqTok, notEqTok, ltTok, ltEqTok, gtTok, gtEqTok,
           notTok, minusTok, minusTok, plusTok,
           multTok, divTok, remainTok, andTok, orTok,
-          noMeanTok, noMeanTok, noMeanTokRemain, noMeanTokRemain, 
-          noMeanTokIf, noMeanTokIf, noMeanTok, noMeanTok, 
+          noMeanTok, noMeanTok, noMeanTokRemain, noMeanTokRemain, noMeanTok, noMeanTok,
+          noMeanTokIf, noMeanTokIf, noMeanTokIf, noMeanTok, noMeanTok, 
           noMeanTokWith, noMeanTokWith, noMeanTok, noMeanTok, noMeanTokThan,
           inputTok, outputTok
     };
+   
    
    private Token (TokenType t, String v) {
       type = t;
@@ -111,10 +112,8 @@ public class Token {
     }
 
     public String toString ( ) {
-        //if (type.compareTo(TokenType.Identifier) < 0) return value;
-    //	System.out.println("return");
         return type + "\t" + value;
-    } // toString
+    }
 
     public static void main (String[] args) {
         System.out.println(eofTok);

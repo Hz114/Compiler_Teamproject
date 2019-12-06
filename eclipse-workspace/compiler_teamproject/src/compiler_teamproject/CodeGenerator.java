@@ -1,5 +1,4 @@
 package compiler_teamproject;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -11,6 +10,7 @@ public class CodeGenerator {
 	private String ucodeStr = "";
 	int idt = 0;
 	int Oplevel = 0;
+	int first_output = 0;
 
 	CodeGenerator(TypeMap Map, Program out) {
 		CodeStartMain(out.decpart);
@@ -33,7 +33,7 @@ public class CodeGenerator {
 		LinkedList<Integer> a = new<Integer> LinkedList();
 		for (Declaration d : ds) { 
 			key = d.v.toString();
-			//System.out.println(key+ "======");
+		//	System.out.println(key+ "======");
 
 			if (d.arrayCheck == 1) {
 		//		System.out.println("array!!!!!!!!!!!");
@@ -64,6 +64,11 @@ public class CodeGenerator {
 						else ucodeStr += ", new Array(" + d.arrB + ")";
 					}
 					ucodeStr += " ) ;\n";
+				}
+				else{
+					//System.out.println("////////" + d.arrA_integer + d.arrB_integer);
+					ucodeStr += "var " + key + " = " + "new Array( " + d.arrA_integer + " ) ;\n" ;
+					
 				}
 			}
 			i++;
@@ -136,11 +141,25 @@ public class CodeGenerator {
 		ucodeStr += key +  " = prompt();" +   "\n";
 	}
 	public void CodeOutput(TypeMap m, Output a) { 
-		String key = a.exprs.toString();
+		//CodeExpression(m, a.expr);
+		//CodeExpression(m, a.source)
+		ucodeStr += "console.log(";
+		first_output = 1;
+		for(Expression expr : a.exprs){
+			if(first_output != 1) ucodeStr += ", ";
+			CodeExpression(m, expr);
+			first_output = 0;
+			//String key_edit = key.substring(1, key.length()-1);
+			//System.out.println(key_edit);
+
+			
+		}
+		ucodeStr +=  ");" +   "\n";
+		//String key = a.exprs.toString();
 		//System.out.println(key);
 		//CodeExpression(m, a.source);
-		String key_edit = key.substring(1, key.length()-1);
-		ucodeStr += "console.log(" + key_edit + ")" +   "\n";
+		//String key_edit = key.substring(1, key.length()-1);
+		//ucodeStr += "console.log(" + key_edit + ")" +   "\n";
 	}
 
 
@@ -224,6 +243,9 @@ public class CodeGenerator {
 			CodeIntValue(m, (IntValue) v);
 		if (v instanceof CharValue)
 			CodeCharValue(m, (CharValue) v);
+		if (v instanceof FloatValue){
+			CodeFloatValue(m, (FloatValue) v);
+		}
 
 	}
 
@@ -337,6 +359,10 @@ public class CodeGenerator {
 		
 		ucodeStr += b;
 	}
+	public void CodeFloatValue(TypeMap m,FloatValue f) {
+		
+		ucodeStr += f;
+	}
 
 	public void CodeIntValue(TypeMap m,  IntValue i) {
 		ucodeStr +=  i ;
@@ -356,9 +382,10 @@ public class CodeGenerator {
 	public static void main(String args[]) {
 		Parser parser = new Parser(new Lexer("C:\\Users\\HYEJI\\eclipse-workspace\\compiler_teamproject_save\\src\\compiler_teamproject_save\\test.txt"));
 		Program prog = parser.program();
-		//error
-		TypeCheckerOperator.V(prog);
 		TypeMap map = TypeCheckerOperator.typing(prog.decpart);
+	//	StaticTypeCheck.V(prog);
+		
+		
 		CodeGenerator G = new CodeGenerator(map, prog);
 		String retStr = G.getCode();
 		G.flush();

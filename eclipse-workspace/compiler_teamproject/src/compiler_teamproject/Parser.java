@@ -1,5 +1,6 @@
 package compiler_teamproject;
 
+
 public class Parser {
     // Recursive descent parser that inputs a C++Lite program and 
     // generates its abstract syntax.  Each method corresponds to
@@ -238,7 +239,6 @@ public class Parser {
 
     	match(TokenType.MeaningLessIf); // (이라면 |라면) 
     	s = statements();
-    	System.out.println(token);
     	if(token.type().equals(TokenType.Else)){ // 그렇지않으면일 경우
     		match(TokenType.Else); // (그렇지않으면)
     		Statement elseS = statement();
@@ -248,7 +248,6 @@ public class Parser {
     	}
     	else {
         	match(TokenType.ControlEnd); // (끝)
-        	System.out.println(token);
         	return new Conditional(e,s); // 만약 'expression' (이라면 | 라면) statements 끝 
     	}
     }

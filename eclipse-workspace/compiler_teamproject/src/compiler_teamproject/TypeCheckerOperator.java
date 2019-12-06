@@ -115,7 +115,7 @@ public class TypeCheckerOperator {
 			return;
 		else if (s instanceof Assignment) {
 			Assignment a = (Assignment) s;
-			check(tm.containsKey(a.target), " undefined target in assignment: " + a.target);
+			check(tm.containsKey(a.target), " undefined target in assignment: " + a.target); // �븷�떦�쓽 ��寃잛씠 ���엯 留듭뿉 �꽑�뼵�릱�뒗吏� 泥댄겕
 			V(a.source, tm); // V(exp, tm)
 			Type ttype = (Type) tm.get(a.target).get(0);  // target type 
 			Type srctype = typeOf(a.source, tm); //source Type
@@ -123,7 +123,7 @@ public class TypeCheckerOperator {
 				if (ttype == Type.INT) 
 					check(srctype == Type.CHAR, "mixed mode assignment to " + a.target);
 				else
-					check(false, "mixed mode assignment to " + a.target); 
+					check(false, "mixed mode assignment to " + a.target); // int�뿉 char�씠 �븘�땶 �떎瑜� ���엯�쓣 �븷�떦�븯�젮怨� �븯硫� false
 			}
 			return;
 		} else if (s instanceof Conditional) {
@@ -159,7 +159,7 @@ public class TypeCheckerOperator {
 		}
 	}
 	public static void main(String args[]) {
-		Parser parser = new Parser(new Lexer("/Users/choejaeyun/Downloads/Compiler/test.txt"));
+		Parser parser = new Parser(new Lexer("C:\\Users\\HYEJI\\eclipse-workspace\\compiler_teamproject_save\\src\\compiler_teamproject_save\\test.txt"));
 		Program prog = parser.program();
 		TypeMap map = TypeCheckerOperator.typing(prog.decpart);
 
