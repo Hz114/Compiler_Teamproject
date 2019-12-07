@@ -89,7 +89,7 @@ public class TypeCheckerValue {
 			}
 			i++;
 		}
-		if(arrA > arrSize[i][0]) {
+		if(arrA >= arrSize[i][0]) {
 			System.err.println("Syntax error: line: " + line);
 			if(arrSize[i][1] == 0) {
 				System.err.println("expecting: " + iden + '[' + arrA + "]의 배열 크기는 [" + arrSize[i][0] + "]입니다");
@@ -117,7 +117,7 @@ public class TypeCheckerValue {
 			}
 			i++;
 		}
-		if(arrA > arrSize[i][0] || arrB > arrSize[i][1]) {
+		if(arrA >= arrSize[i][0] || arrB >= arrSize[i][1]) {
 			System.err.println("Syntax error: line: " + line);
 			System.err.println("expecting: " +  iden + '[' + arrA + "][" + arrB + "]의 배열 크기는  [" + arrSize[i][0] + "][" + arrSize[i][1] + "] 입니다");
 			System.exit(1);
