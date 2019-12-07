@@ -1,4 +1,5 @@
 package compiler_teamproject;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -138,7 +139,7 @@ public class CodeGenerator {
 		
 		String key = a.v.toString();
 		//CodeExpression(m, a.source);
-		ucodeStr += key +  " = prompt();" +   "\n";
+		ucodeStr += key +  " = Number(prompt());" +   "\n";
 	}
 	public void CodeOutput(TypeMap m, Output a) { 
 		//CodeExpression(m, a.expr);
@@ -146,8 +147,10 @@ public class CodeGenerator {
 		ucodeStr += "console.log(";
 		first_output = 1;
 		for(Expression expr : a.exprs){
-			if(first_output != 1) ucodeStr += ", ";
+			if(first_output != 1) ucodeStr += " + \"\\n\" + ";
+			ucodeStr +="(";
 			CodeExpression(m, expr);
+			ucodeStr +=")";
 			first_output = 0;
 			//String key_edit = key.substring(1, key.length()-1);
 			//System.out.println(key_edit);
@@ -178,12 +181,27 @@ public class CodeGenerator {
 		ucodeStr += ") {\n";
 		idt++;
 		CodeStatement(m, thenBranch);
-		CodeStatement(m, elseBranch);
 		idt--;
 		for(int i=0; i<idt; i++){
 			ucodeStr += "\t";
 		}
 		ucodeStr += "}\n";
+		if(!(elseBranch instanceof Skip)) {
+			for(int i=0; i<idt; i++){
+				ucodeStr += "\t";
+			}
+			ucodeStr += "else{\n";
+			idt++;
+			CodeStatement(m, elseBranch);
+			idt--;
+			for(int i=0; i<idt; i++){
+				ucodeStr += "\t";
+			}
+			ucodeStr += "}\n";
+		}
+		//CodeStatement(m, elseBranch);
+		
+		
 	}
 
 	public void CodeLoop(TypeMap m, Loop l) {
@@ -294,11 +312,11 @@ public class CodeGenerator {
 			break;
 
 		case "같다":
-			ucodeStr += " == " ;
+			ucodeStr += " === " ;
 			break;
 
 		case "다르다":
-			ucodeStr += " != " ;
+			ucodeStr += " !== " ;
 			break;
 
 		case "크다":
@@ -375,12 +393,12 @@ public class CodeGenerator {
 	public String getCode() {
 		return ucodeStr;
 	}
-
+	
 	public void flush() {
 		ucodeStr = "";
 	}
 	public static void main(String args[]) {
-		Parser parser = new Parser(new Lexer("C:\\Users\\HYEJI\\eclipse-workspace\\compiler_teamproject_save\\src\\compiler_teamproject_save\\test.txt"));
+		Parser parser = new Parser(new Lexer("eclipse-workspace\\\\compiler_teamproject\\\\src\\\\compiler_teamproject\\\\test4.txt"));
 		Program prog = parser.program();
 		TypeMap map = TypeCheckerOperator.typing(prog.decpart);
 	//	StaticTypeCheck.V(prog);

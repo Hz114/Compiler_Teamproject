@@ -17,8 +17,8 @@ public class Lexer {
     private final char eolnCh = '\n';
     private final char eofCh = '\004';
     private static final String[] postpositions = { 
-   		 "은", "는","이", "가",  "을", "를","같다","다르다",
-             "이다", "다","면","라면","이라면","참", "거짓",
+   		 "은", "는","이", "가",  "을", "를",//"같다","다르다",
+             "이다","라면","이라면",//"참", "거짓",
             "와", "과", "로", "보다","으로"
    };
     

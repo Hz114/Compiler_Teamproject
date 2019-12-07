@@ -41,6 +41,7 @@ public class Token {
    public static final Token noMeanTokIf = new Token(TokenType.MeaningLessIf);
    public static final Token noMeanTokThan = new Token(TokenType.MeaningLessThan);
    public static final Token noMeanTokWith = new Token(TokenType.MeaningLessWith);
+   public static final Token noMeanTokAss = new Token(TokenType.MeaningLessAssign);
    public static final Token inputTok = new Token(TokenType.Input);
    public static final Token outputTok = new Token(TokenType.Output);
 
@@ -63,7 +64,7 @@ public class Token {
           notTok, minusTok, minusTok, plusTok,
           multTok, divTok, remainTok, andTok, orTok,
           noMeanTok, noMeanTok, noMeanTokRemain, noMeanTokRemain, noMeanTok, noMeanTok,
-          noMeanTokIf, noMeanTokIf, noMeanTokIf, noMeanTok, noMeanTok, 
+          noMeanTokIf, noMeanTokIf, noMeanTokIf, noMeanTokAss, noMeanTokAss, 
           noMeanTokWith, noMeanTokWith, noMeanTok, noMeanTok, noMeanTokThan,
           inputTok, outputTok
     };

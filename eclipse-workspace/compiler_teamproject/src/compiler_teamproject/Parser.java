@@ -1,6 +1,5 @@
 package compiler_teamproject;
 
-
 public class Parser {
     // Recursive descent parser that inputs a C++Lite program and 
     // generates its abstract syntax.  Each method corresponds to
@@ -24,7 +23,6 @@ public class Parser {
     }
   
     private String match (TokenType t) { // * return the string of a token if it matches with t *
-    	
         String value = token.value();
         if (token.type().equals(t)){
             token = lexer.next();
@@ -121,7 +119,7 @@ public class Parser {
         	}
     	}while(token.type().equals(TokenType.Comma));
     	
-    	match(TokenType.MeaningLess); // (이다/다)
+    	match(TokenType.MeaningLessAssign); // (이다/다)
     }
     	
     	
@@ -214,7 +212,7 @@ public class Parser {
     	match(TokenType.MeaningLess); // (은|는)
 
     	Expression e = expression();
-    	match(TokenType.MeaningLess); // (다|이다)
+    	match(TokenType.MeaningLessAssign); // (다|이다)
     	assignFlag = 0;
 
     	codeLine = lexer.getLine();
@@ -241,7 +239,7 @@ public class Parser {
     	s = statements();
     	if(token.type().equals(TokenType.Else)){ // 그렇지않으면일 경우
     		match(TokenType.Else); // (그렇지않으면)
-    		Statement elseS = statement();
+    		Statement elseS = statements();
         	match(TokenType.ControlEnd); // (끝)
 
     		return new Conditional(e,s,elseS); // 만약 'expression' (이라면 | 라면) statements 끝  그렇지 않으면  statements 끝
@@ -282,7 +280,7 @@ public class Parser {
                match(TokenType.RightBracket);
            }
         }
-        match(TokenType.MeaningLess);
+        match(TokenType.MeaningLessAssign);
         
         codeLine = lexer.getLine();
         if(arr1 != null && arr2 != null) { //2차원 배열
@@ -309,7 +307,7 @@ public class Parser {
            out.add(expression());
            assignFlag = 0;
         }
-        match(TokenType.MeaningLess);
+        match(TokenType.MeaningLessAssign);
         
         return out;
     }
@@ -345,15 +343,14 @@ public class Parser {
     	Expression e = relation();
     	if(token.type().equals(TokenType.MeaningLess) && assignFlag == 0
     			&& !token.type().equals(TokenType.MeaningLessIf) && pass == 0){
-        	match(TokenType.MeaningLess); // (은|는)
+        	match(TokenType.MeaningLess); // (은|는)	
         	Expression r2 = relation();
         	if(token.type().equals(TokenType.MeaningLessIf)){
         		Operator op = new Operator(match(token.type()));
                 e = new Binary(op, e, r2);
                 return e;
         	}
-        	
-        	match(TokenType.MeaningLess);
+        	match(TokenType.MeaningLessWith);
         	
         	if(isEqualityOp()){
         		Operator op = new Operator(match(token.type()));
@@ -586,6 +583,7 @@ public class Parser {
                token.type().equals(TokenType.Input) ||
                token.type().equals(TokenType.Output) ||
                token.type().equals(TokenType.ControlEnd) ||
+               token.type().equals(TokenType.Else) ||
                token.type().equals(TokenType.Eof);
      }
     
