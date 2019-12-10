@@ -1,4 +1,4 @@
-package compiler_teamproject;
+package compiler_teamproject_save;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -33,10 +33,8 @@ public class CodeGenerator {
 		LinkedList<Integer> a = new<Integer> LinkedList();
 		for (Declaration d : ds) { 
 			key = d.v.toString();
-		//	System.out.println(key+ "======");
 
 			if (d.arrayCheck == 1) {
-		//		System.out.println("array!!!!!!!!!!!");
 				a.add(1);
 			} else
 				a.add(0);
@@ -51,13 +49,11 @@ public class CodeGenerator {
 		}
 		for (Declaration d : ds) {
 			key = d.v.toString();
-			//System.out.println(key);
 			if (a.get(i) == 0) { // 배열이 아니면
 				ucodeStr += "var " + key+ " ;\n";
 			}
 			else{
 				if(d.arrB_integer != -1){
-					//System.out.println("////////" + d.arrA_integer + d.arrB_integer);
 					ucodeStr += "var " + key + " = " + "new Array(";
 					for(int k=0; k<d.arrA_integer; k++){
 						if(k == 0) ucodeStr += " new Array(" + d.arrB + ")";
@@ -66,7 +62,6 @@ public class CodeGenerator {
 					ucodeStr += " ) ;\n";
 				}
 				else{
-					//System.out.println("////////" + d.arrA_integer + d.arrB_integer);
 					ucodeStr += "var " + key + " = " + "new Array( " + d.arrA_integer + " ) ;\n" ;
 					
 				}
@@ -74,7 +69,6 @@ public class CodeGenerator {
 			i++;
 		}
 		
-		//var arr = new Array(new Array(4), new Array(4), new Array(4));
 	}
 
 	public void CodeBody(TypeMap m, Block b) {
@@ -126,7 +120,6 @@ public class CodeGenerator {
 			else{
 				ucodeStr += "[" + a.arrA_integer + "]";
 			}
-			
 		}
 		
 		ucodeStr += " = " ;
@@ -139,56 +132,59 @@ public class CodeGenerator {
 			ucodeStr += "\t";
 		}
 		String key = a.v.toString();
-		//CodeExpression(m, a.source);
 		ucodeStr += key +  " = prompt();" +   "\n";
 	}
+	
 	public void CodeOutput(TypeMap m, Output a) {
 		for(int i=0; i<idt; i++){
 			ucodeStr += "\t";
 		}
-		//CodeExpression(m, a.expr);
-		//CodeExpression(m, a.source)
 		ucodeStr += "console.log(";
 		first_output = 1;
 		for(Expression expr : a.exprs){
 			if(first_output != 1) ucodeStr += ", ";
 			CodeExpression(m, expr);
-			first_output = 0;
-			//String key_edit = key.substring(1, key.length()-1);
-			//System.out.println(key_edit);
-
-			
+			first_output = 0;	
 		}
 		ucodeStr +=  ");" +   "\n";
-		//String key = a.exprs.toString();
-		//System.out.println(key);
-		//CodeExpression(m, a.source);
-		//String key_edit = key.substring(1, key.length()-1);
-		//ucodeStr += "console.log(" + key_edit + ")" +   "\n";
 	}
-
-
-
+	
 	public void CodeConditional(TypeMap m, Conditional c) {
 		for(int i=0; i<idt; i++){
 			ucodeStr += "\t";
 		}
+
 		Expression test = c.test;
 		Statement thenBranch = c.thenbranch;
 		Statement elseBranch = c.elsebranch;
 		String labelName = "if(";
 		ifLabelN++;
 		ucodeStr += labelName;
+	      
 		CodeExpression(m, test); // 조건문
 		ucodeStr += ") {\n";
 		idt++;
 		CodeStatement(m, thenBranch);
-		CodeStatement(m, elseBranch);
 		idt--;
+	      
 		for(int i=0; i<idt; i++){
 			ucodeStr += "\t";
 		}
-		ucodeStr += "}\n";
+		ucodeStr+="}\n";
+	      
+		if(!(elseBranch instanceof Skip)) {
+			for(int i=0; i<idt; i++){
+				ucodeStr += "\t";
+			}
+			ucodeStr += "else {\n";
+			idt++;
+			CodeStatement(m, elseBranch);
+			idt--;
+			for(int i=0; i<idt; i++){
+				ucodeStr += "\t";
+			}
+			ucodeStr += "}\n";
+		}
 	}
 
 	public void CodeLoop(TypeMap m, Loop l) {
@@ -277,59 +273,45 @@ public class CodeGenerator {
 		if(Oplevel > 1){
 			ucodeStr += "(";
 		}
-	//	System.out.println("operation = ===?????? "+ strOp);
 		CodeExpression(m, b.term1);
 		
-
 		switch (strOp) {
 		case "그리고":
 			ucodeStr += " && ";
 			break;
-
 		case "또는":
 			ucodeStr += " || ";
 			break;
-
 		case "작다":
 			ucodeStr += " < ";
 			break;
-
 		case "작거나같다":
 			ucodeStr += " <= ";
 			break;
-
 		case "같다":
 			ucodeStr += " == " ;
 			break;
-
 		case "다르다":
 			ucodeStr += " != " ;
 			break;
-
 		case "크다":
 			ucodeStr += " > " ;
 			break;
-
 		case "크거나같다":
 			ucodeStr += " >= " ;
 			break;
-
 		case "더하기":
 			ucodeStr += " + " ;
 			break;
-
 		case "빼기":
 			ucodeStr += " - ";
 			break;
-
 		case "곱하기":
 			ucodeStr += " * " ;
 			break;
-
 		case "나누기":
 			ucodeStr += " / " ;
 			break;
-
 		case "나눈나머지":
 			ucodeStr += " % ";
 			break;
@@ -388,8 +370,7 @@ public class CodeGenerator {
 		Parser parser = new Parser(new Lexer("C:\\Users\\HYEJI\\eclipse-workspace\\compiler_teamproject_save\\src\\compiler_teamproject_save\\test.txt"));
 		Program prog = parser.program();
 		TypeMap map = TypeCheckerOperator.typing(prog.decpart);
-	//	StaticTypeCheck.V(prog);
-		
+	
 		
 		CodeGenerator G = new CodeGenerator(map, prog);
 		String retStr = G.getCode();
